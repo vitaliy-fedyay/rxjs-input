@@ -1,0 +1,19 @@
+.container {
+  margin: 0 auto;
+}
+
+.first-block {
+  float: left;
+}
+
+.second-block {
+  float: right;
+}
+
+input {
+  margin: 20px;
+}
+
+p {
+  margin: 20px;
+}
