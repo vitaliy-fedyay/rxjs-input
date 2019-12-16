@@ -1,36 +1,48 @@
 const { fromEvent } = rxjs
-const { map, debounceTime, distinct, filter } = rxjs.operators
+const { map, debounceTime, delay, filter } = rxjs.operators
 
 const firstInput = document.getElementById("first-input")
 const secondInput = document.getElementById("second-input")
 const thirdInput = document.getElementById("third-input")
 
 const result = document.getElementById("result")
+const buttonShowResult = document.getElementById("button")
 
-let data = []
+const resultFirstInput = fromEvent(firstInput, "input")
+const resultSecondInput = fromEvent(secondInput, "input")
+const resultThirdInput = fromEvent(thirdInput, "input")
 
-const resultFirstInput = fromEvent(firstInput, "input").pipe(
-  debounceTime(1000),
-  distinct()
-)
-resultFirstInput.subscribe(value => this.data.push(value))
+let data = {
+  first: 0,
+  second: 0,
+  third: 0
+}
 
-const resultSecondInput = fromEvent(secondInput, "input").pipe(
-  debounceTime(1000),
-  map(event => event.target.value * 2)
-)
-resultSecondInput.subscribe(value => this.data.push(value))
+resultFirstInput.pipe(
+  map(event => event.target.value),
+  debounceTime(500),
+  filter(value => value.trim()),
+  delay(2000))
+  .subscribe(value => data.first = value)
 
-const resultThirdInput = fromEvent(thirdInput, "input").pipe(
-  debounceTime(1000),
-  filter(value => value.trim())
-)
-resultThirdInput.subscribe(value => this.data.push(value))
+resultSecondInput.pipe(
+  debounceTime(500),
+  map(event => event.target.value * 2))
+  .subscribe(value => data.second = value)
 
-fromEvent( document, 'keypress').subscribe( event => {
-  if( event.key === 13) {
-    this.result.innerHTML = data
-  }
-})
+resultThirdInput.pipe(
+  debounceTime(500),
+  map(event => event.target.value),
+  filter(value => value % 2 == 0))
+  .subscribe(value => data.third = value)
+
+fromEvent(buttonShowResult, 'click').subscribe(
+  function (event) {
+    let array = []
+    for (let item in data) {
+      array.push(data[item])
+    }
+    result.innerHTML = array
+  })
 
 
